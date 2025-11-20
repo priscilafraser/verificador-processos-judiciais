@@ -1,0 +1,82 @@
+# -----------------------------
+# Python
+# -----------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.egg
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# Jupyter / Colab
+.ipynb_checkpoints/
+*.ipynb
+
+# Pytest / Coverage
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Logs
+*.log
+logs/
+*.out
+*.err
+
+# Cache
+.cache/
+*.cache
+*.DS_Store
+
+# Byte-compiled
+*.swp
+*.swo
+
+# -----------------------------
+# Flask
+# -----------------------------
+instance/
+.flaskenv
+
+# -----------------------------
+# Streamlit
+# -----------------------------
+.streamlit/secrets.toml
+.streamlit/*credentials.toml
+
+# -----------------------------
+# Environment Variables
+# -----------------------------
+.env
+.env.*
+*.env
+
+# -----------------------------
+# Editor / IDE
+# -----------------------------
+.vscode/
+.idea/
+*.code-workspace
+
+# -----------------------------
+# Docker
+# -----------------------------
+*.tar
+docker-compose.override.yml
+
+# -----------------------------
+# OS / Misc
+# -----------------------------
+Thumbs.db
+.DS_Store
