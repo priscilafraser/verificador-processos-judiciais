@@ -33,5 +33,5 @@ class Processo(BaseModel):
 class ResultadoDecisao(BaseModel):
     decisao: str
     justificativa: str     
-    citacoess: List[str]
+    citacoes: List[str]
 

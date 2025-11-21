@@ -29,9 +29,9 @@ FORMATO DE RESPOSTA
 Responda SOMENTE com o seguinte JSON:
 
 {
-  "decision": "...",
-  "rationale": "...",
-  "citations": ["..."]
+  "decisao": "...",
+  "justificativa": "...",
+  "citacoes": ["..."]
 }
 
 NÃO inclua mensagens adicionais, explicações ou texto fora do JSON.
