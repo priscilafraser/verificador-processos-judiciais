@@ -17,11 +17,14 @@ logger = obter_log("llm")
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Carregando template
-def carregarPromptTemplate(path: str = None) -> str:
+def carregarPrompt(path: str = None) -> str:
+
+    versao = os.getenv("PROMPT_VERSION", "1")
+    logger.info(f"Usando prompt versão {versao}")
 
     if path is None:
         base_dir = os.path.dirname(os.path.abspath(__file__))
-        path = os.path.join(base_dir, "prompt_template.txt")
+        path = os.path.join(base_dir, "prompts", f"prompt_v{versao}.txt")
 
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
@@ -30,7 +33,7 @@ def carregarPromptTemplate(path: str = None) -> str:
 # Constroi o prompt final, injetando o JSON do parecer técnico
 def construirPrompt(opniao_tecnica: OpniaoTecnica) -> str:
 
-    template = carregarPromptTemplate()
+    template = carregarPrompt()
     opiniao_json = opniao_tecnica.model_dump_json(ensure_ascii=False)
 
     prompt = template.replace("{technical_opinion_json}", opiniao_json)
