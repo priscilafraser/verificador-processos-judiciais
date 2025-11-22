@@ -7,8 +7,12 @@ from pydantic import ValidationError
 from api.schemas.process_schema import ResultadoDecisao
 from verifier.opniaoTecnica import OpniaoTecnica
 from dotenv import load_dotenv
+from config.logger import obter_log
+
 
 load_dotenv()
+
+logger = obter_log("llm")
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -84,6 +88,12 @@ def _extrair_json(texto: str) -> Any:
 # Função principal do módulo
 def analisar_com_llm(opiniao_tecnica: OpniaoTecnica) -> ResultadoDecisao:
 
+    logger.info(
+        "Chamando LLM para decisão | numero_processo=%s | politicas_violadas=%s",
+        opiniao_tecnica.numero_processo,
+        opiniao_tecnica.politicas_potencialmente_violadas,
+    )
+
     # Monta o prompt
     prompt = construirPrompt(opiniao_tecnica)
 
@@ -97,6 +107,12 @@ def analisar_com_llm(opiniao_tecnica: OpniaoTecnica) -> ResultadoDecisao:
     try:
         decisao = ResultadoDecisao(**data)
     except ValidationError as e:
+        logger.error("Resposta do LLM não bate com DecisionResult | erro=%s", e)
         raise ErroLLM(f"Resposta do LLM não atende ao schema ResultadoDecisao: {e}") from e
 
+    logger.info(
+        "Decisão validada | numero_processo=%s | decision=%s",
+        opiniao_tecnica.numero_processo,
+        decisao.decisao,
+    )
     return decisao

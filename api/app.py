@@ -1,78 +1,80 @@
-from flask import Flask, jsonify, request
-from pydantic import ValidationError
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 import json
 
 from api.schemas.process_schema import Processo
 from verifier.opniaoTecnica import gerar_parecer_tecnico
 from verifier.llm_client import analisar_com_llm, ErroLLM
+from config.logger import obter_log
+import uuid
 
-app = Flask(__name__)
 
-@app.route("/health", methods=["GET"])
+app = FastAPI(
+    title="JusCash ML API",
+    version="1.0.0",
+    description="API para análise automatizada de processos judiciais."
+)
+
+logger = obter_log("api")
+
+@app.get("/health")
 def health():
 
-    return jsonify(
-        {
+    return {
             "status": "ok",
             "service": "juscash-ml-api",
         }
-    ), 200
 
 
 # Endpoint principal
-@app.route("/analisar-processo", methods=["POST"])
-def analisar_processo():
+@app.post("/analisar-processo")
+def analisar_processo(processo: Processo):
     
-    # Json de entrada
-    try:
-        requisicao = request.get_json(force=True)
-    except Exception:
-        return (
-            jsonify({"error": "JSON inválido no corpo da requisição."}),
-            400,
-        )
-
-    # Valida com pydantic
-    try:
-        processo = Processo(**requisicao)
-    except ValidationError as e:
-        return (
-            jsonify(
-                {
-                    "error": "Payload não está no formato esperado para Processo.",
-                    "details": json.loads(e.json()),
-                }
-            ),
-            400,
-        )
+    request_id = str(uuid.uuid4())
+    logger.info(f"[{request_id}] Nova requisição /analisar-processo recebida")
 
     # Gera parecer técnico + chama llm
     try:
         parecer = gerar_parecer_tecnico(processo)
-        decisao = analisar_com_llm(parecer)
-    except ErroLLM as e:
-        return (
-            jsonify(
-                {
-                    "error": "Falha ao obter decisão do LLM.",
-                    "details": str(e),
-                }
-            ),
-            500,
-        )
-    except Exception as e:
-        return (
-            jsonify(
-                {
-                    "error": "Erro interno ao analisar o processo.",
-                    "details": str(e),
-                }
-            ),
-            500,
+        logger.info(
+            f"[{request_id}] Parecer gerado | numero_processo={processo.numeroProcesso} | "
+            f"politicas_violadas={parecer.politicas_potencialmente_violadas}"
         )
 
+        decisao = analisar_com_llm(parecer)
+        logger.info(
+            f"[{request_id}] Decisão LLM | numero_processo={processo.numeroProcesso} | "
+            f"decision={decisao.decisao} | citations={decisao.citacoes}"
+        )
+
+    except ErroLLM as e:
+        logger.error(
+            f"[{request_id}] Erro na decisão do LLM | numero_processo={processo.numeroProcesso} | erro={e}"
+        )
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "error": "Falha ao obter decisão do LLM.",
+                "details": str(e),
+            },
+        )
+
+    except Exception as e:
+        logger.exception(
+            f"[{request_id}] Erro inesperado ao analisar processo "
+            f"| numero_processo={processo.numeroProcesso}"
+        )
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "error": "Erro interno ao analisar o processo.",
+                "details": str(e),
+            },
+        )
+    
+
     # Resultado final
-    return jsonify(decisao.model_dump()), 200
+    return decisao.model_dump()
 
 
 if __name__ == "__main__":
