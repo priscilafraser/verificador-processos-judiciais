@@ -1,7 +1,10 @@
 import json
 import requests
 import streamlit as st
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
 st.set_page_config(
     page_title="JusCash ML - Análise de Processos",
@@ -21,7 +24,9 @@ Cole o JSON do processo abaixo e veja a decisão automaticamente.
 # Sidebar - Config
 st.sidebar.header("Configurações")
 
-api_url_default = "http://localhost:8000"
+#api_url_default = "http://localhost:8000"
+api_url_default = os.getenv("JUSCASH_API_URL", "http://localhost:8000")
+
 api_url = st.sidebar.text_input(
     "URL da API",
     value=api_url_default,
