@@ -34,7 +34,7 @@ def carregarPrompt(path: str = None) -> str:
 def construirPrompt(opniao_tecnica: OpniaoTecnica) -> str:
 
     template = carregarPrompt()
-    opiniao_json = opniao_tecnica.model_dump_json(ensure_ascii=False)
+    opiniao_json = json.dumps(opniao_tecnica.model_dump(), ensure_ascii=False)
 
     prompt = template.replace("{technical_opinion_json}", opiniao_json)
     return prompt

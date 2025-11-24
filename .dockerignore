@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Virtual envs
+.venv/
+venv/
+env/
+ENV/
+
+# VCS
+.git
+.gitignore
+
+# IDE / Editor
+.vscode/
+.idea/
+*.code-workspace
+
+# Logs
+logs/
+*.log
+
+# Config local
+.env
+.env.*
+*.env
+
+# Cache / OS
+.cache/
+*.DS_Store
+Thumbs.db
+
+# Tests (não precisa na imagem)
+tests/
