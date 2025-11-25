@@ -289,6 +289,8 @@ Variáveis de ambiente utilizadas:
   - OPENAI_API_KEY – chave da OpenAI usada pelo modelo
 
   - PROMPT_VERSION – versão do prompt carregado pelo serviço (ex.: 1)
+    
+  - N8N_WEBHOOK_URL - url webhook n8n
 
 URL pública da API:
 ````bash
