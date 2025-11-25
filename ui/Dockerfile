@@ -1,17 +1,18 @@
 FROM python:3.11-slim
 
-# diretório de trabalho dentro do container
+# O WORKDIR está correto, definindo o diretório de trabalho dentro do container
 WORKDIR /app/ui
 
-# copia os arquivos de dependência
-COPY ui/requirements-ui.txt ./requirements.txt
+# COPIA os arquivos do contexto (que AGORA é a pasta 'ui'). 
+# O prefixo 'ui/' foi removido.
+COPY requirements-ui.txt ./requirements.txt 
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia o restante dos arquivos da UI (app_interface.py)
-COPY ui/. .
+# Copia o restante dos arquivos (app_interface.py) do contexto (ui/)
+COPY . .
 
-# porta padrão do Streamlit (Railway vai injetar $PORT)
+# Porta padrão do Streamlit
 ENV PORT=8501
 
-# comando para rodar a interface Streamlit
-CMD ["sh", "-c", "streamlit run app_interface.py --server.port=$PORT --server.address=0.0.0.0"]
+# Comando Padrão Streamlit
+CMD ["sh", "c", "streamlit run app_interface.py --server.port=$PORT --server.address=0.0.0.0"]
