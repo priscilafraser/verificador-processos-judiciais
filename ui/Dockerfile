@@ -14,10 +14,10 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copiar arquivos de dependências. 
-COPY ui/requirements-ui.txt ./requirements.txt
+COPY ui/requirements-ui.txt .
 
 # Instalar dependências do Python
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements-ui.txt
 
 # Copiar o restante do código
 COPY ui/. .
@@ -26,4 +26,4 @@ COPY ui/. .
 ENV PORT=8501
 
 # Comando para rodar a interface Streamlit (CMD corrigido com -c)
-CMD ["sh", "-c", "streamlit run app_interface.py --server.port=$PORT --server.address=0.0.0.0"]
+CMD ["streamlit", "run", "app_interface.py --server.port=$PORT --server.address=0.0.0.0"]
