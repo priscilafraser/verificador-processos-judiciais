@@ -1,19 +1,29 @@
+# Imagem base
 FROM python:3.11-slim
 
-# O WORKDIR está correto, definindo o diretório de trabalho dentro do container
+# Impedir buffering de logs (Boa prática da API)
+ENV PYTHONUNBUFFERED=1
+
+# Diretório de trabalho dentro do container
 WORKDIR /app/ui
 
-# COPIA os arquivos do contexto (que AGORA é a pasta 'ui'). 
-# O prefixo 'ui/' foi removido.
-COPY requirements-ui.txt ./requirements.txt 
+# Instalar dependências do sistema
+# build-essential é necessário para compilar certas bibliotecas Python
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiar arquivos de dependências. 
+COPY ui/requirements-ui.txt ./requirements.txt
+
+# Instalar dependências do Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia o restante dos arquivos (app_interface.py) do contexto (ui/)
-COPY . .
+# Copiar o restante do código
+COPY ui/. .
 
 # Porta padrão do Streamlit
 ENV PORT=8501
 
-# Comando Padrão Streamlit
+# Comando para rodar a interface Streamlit (CMD corrigido com -c)
 CMD ["sh", "-c", "streamlit run app_interface.py --server.port=$PORT --server.address=0.0.0.0"]
-#CMD ["streamlit", "run", "app_interface.py", "--server.port=8501", "--server.address=0.0.0.0"]
