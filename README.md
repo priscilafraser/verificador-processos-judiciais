@@ -376,6 +376,6 @@ Livre para uso educacional ou análise de código.
 
 ### 🧑‍💻 Autor
 
-Projeto desenvolvido para estudo e demonstração de estratégias de detecção de ameaças com Machine Learning e análise inteligente de logs, aplicando técnicas de Detecção de Anomalias e práticas de Segurança Cibernética (Blue Team).
+Projeto desenvolvido para estudo e demonstração de técnicas de análise automatizada de documentos jurídicos, combinando modelos tradicionais de validação com Inteligência Artificial generativa para apoiar decisões e estruturar informações de forma segura e confiável.
 | [<img src="https://avatars.githubusercontent.com/u/55546267?v=4" width=115><br><sub>Priscila Miranda</sub>](https://github.com/priscilafraser) |
 | :---: |
