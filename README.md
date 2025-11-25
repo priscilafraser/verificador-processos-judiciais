@@ -437,7 +437,7 @@ https://docs.google.com/spreadsheets/d/1qEI-1PVtfYc_mIP4iCwAKffKTS1jT9b--ie-siWW
 - Deploy completo via containers (API + Interface)
 
 
-🔗 Links para avaliação
+## Links para avaliação
 
 - **Repositório GitHub (código completo + documentação)**  
   - https://github.com/priscilafraser/verificador-processos-judiciais.git
