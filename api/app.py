@@ -6,6 +6,8 @@ from verifier.llm_client import analisar_com_llm, ErroLLM
 from config.logger import obter_log
 import uuid
 import time
+import os
+import requests
 
 
 app = FastAPI(
@@ -58,6 +60,15 @@ def analisar_processo(processo: Processo):
             f"[{request_id}] Erro na decisão do LLM | numero_processo={processo.numeroProcesso} | "
             f"erro={e} | total_time={tempo_total_llm_erro:.3f}s"
         )
+
+        # Notificar fluxo no n8n (erro)
+        notificar_n8n_erro(
+            request_id=request_id,
+            processo=processo,
+            error=str(e),
+            tempo_total=tempo_total_llm_erro
+        )
+
         raise HTTPException(
             status_code=500,
             detail={
@@ -72,6 +83,15 @@ def analisar_processo(processo: Processo):
             f"[{request_id}] Erro inesperado ao analisar processo "
             f"| numero_processo={processo.numeroProcesso} | total_time={tempo_total_erros:.3f}s"
         )
+
+        # Notificar fluxo no n8n (erro)
+        notificar_n8n_erro(
+            request_id=request_id,
+            processo=processo,
+            error=str(e),
+            tempo_total=tempo_total_llm_erro
+        )
+
         raise HTTPException(
             status_code=500,
             detail={
@@ -87,5 +107,46 @@ def analisar_processo(processo: Processo):
         f"[{request_id}] Tempos | parecer={parecer_tempo:.3f}s | llm={llm_tempo:.3f}s | "
         f"total={tempo_total:.3f}s"
     )
+
+    notificar_n8n_sucesso(request_id, processo, decisao, tempo_total)
+
     return decisao.model_dump()
+
+
+N8N_WEBHOOK_URL = os.getenv("N8N_WEBHOOK_URL")
+
+def notificar_n8n_sucesso(request_id, processo, decisao, tempo_total):
+    if not N8N_WEBHOOK_URL:
+        return
+    payload = {
+        "request_id": request_id,
+        "numero_processo": processo.numeroProcesso,
+        "decisao": decisao.decisao,
+        "citacoes": decisao.citacoes,
+        "latencia_total": tempo_total,
+        "versao_prompt": os.getenv("PROMPT_VERSION", "1"),
+        "status": "success",
+    }
+    try:
+        requests.post(N8N_WEBHOOK_URL, json=payload, timeout=5)
+    except Exception:
+        logger.warning(f"[{request_id}] Falha ao notificar n8n")
+
+
+def notificar_n8n_erro(request_id, processo, error, tempo_total):
+    if not N8N_WEBHOOK_URL:
+        return
+    payload = {
+        "request_id": request_id,
+        "numero_processo": processo.numeroProcesso,
+        "erro": error,
+        "latencia_total": tempo_total,
+        "versao_prompt": os.getenv("PROMPT_VERSION", "1"),
+        "status": "error",
+    }
+    try:
+        requests.post(N8N_WEBHOOK_URL, json=payload, timeout=5)
+    except Exception:
+        logger.warning(f"[{request_id}] Falha ao notificar n8n (erro)")
+
 
