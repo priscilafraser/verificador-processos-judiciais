@@ -353,6 +353,72 @@ OPENAI_API_KEY=...
 PROMPT_VERSION=1
 ````
 
+## Orquestração de Fluxo com n8n
+
+Para atender ao requisito de orquestração e monitoramento de fluxos, o projeto integra a API com um workflow no n8n Cloud.  
+
+A cada análise de processo, a API envia um evento estruturado para um Webhook do n8n, que registra os resultados em planilhas do Google Sheets separando sucesso e erro.
+
+### Fluxo implementado
+
+1. API FastAPI 
+   - Endpoint `/analisar-processo` processa o JSON do processo, aplica as regras de negócio, gera o parecer técnico e consulta o LLM.  
+   - Ao final, a API calcula a latência total da requisição e envia um evento para o n8n via HTTP POST, usando a variável de ambiente:
+
+   ```env
+   N8N_WEBHOOK_URL=https://<meu-n8n>/webhook/juscash-decisoes
+
+2. Workflow no n8n
+
+O workflow é composto por três nós principais:
+
+- Webhook – recebe o evento da API.
+
+- IF – avalia o campo status:
+
+  - status == "success" → ramo de sucesso
+
+  - status != "success" → ramo de erro
+
+- Google Sheets (Append Row) – registra os eventos em duas planilhas:
+
+  - decisoes_sucesso → apenas análises concluídas com sucesso
+
+  - decisoes_erro → apenas falhas (ex.: erro de LLM, exceções internas)
+
+Dessa forma, cada decisão fica registrada com:
+
+- request_id
+
+- numero_processo
+
+- status (success / error)
+
+- decisao ou erro
+
+- citacoes (quando houver)
+
+- latencia_total
+
+- versao_prompt
+
+- timestamp gerado no n8n (ISO 8601)
+
+Os registros salvos podem ser vistos em:
+https://docs.google.com/spreadsheets/d/1qEI-1PVtfYc_mIP4iCwAKffKTS1jT9b--ie-siWWUW0/edit?usp=sharing
+
+3. Benefícios da orquestração
+
+✔ Observabilidade de ponta a ponta: consigo rastrear cada requisição da API até o registro em planilha, usando o request_id.
+
+✔ Monitoramento de falhas: qualquer erro de LLM ou exceção é automaticamente registrado na planilha de erros, facilitando análise posterior.
+
+✔ Histórico de decisões: as planilhas funcionam como um log de auditoria simples, permitindo verificar decisões por número de processo, tempo de resposta e versão do prompt utilizada.
+
+✔ Desacoplamento: caso o n8n ou o Google Sheets fiquem indisponíveis, a API continua funcionando; a integração é independente.
+
+
+
 ## Pontos Fortes Técnicos
 - Estrutura organizada e fácil de entender
 
@@ -367,6 +433,35 @@ PROMPT_VERSION=1
 - Backend em FastAPI + UI em Streamlit
 
 - Deploy completo via containers (API + Interface)
+
+
+🔗 Links para avaliação
+
+- **Repositório GitHub (código completo + documentação)**  
+  - https://github.com/priscilafraser/verificador-processos-judiciais.git
+
+- **API em produção (Railway)**  
+  - https://verificador-processos-judiciais-production.up.railway.app/     
+  - `GET /health` → status da API  
+  - `POST /analisar-processo` → recebe o JSON do processo e retorna decisão estruturada
+
+- **Interface Web (UI) em produção**  
+  - https://verificador-proceapps-judiciais.streamlit.app/  
+  - Permite colar o JSON do processo, chamar a API e visualizar a decisão.
+
+- **Logs de orquestração (n8n + Google Sheets)**  
+  - Workflow n8n: Webhook → IF (success/error) → Google Sheets  
+  - Planilhas de log (somente leitura):  
+    - Sucesso: https://docs.google.com/spreadsheets/d/1qEI-1PVtfYc_mIP4iCwAKffKTS1jT9b--ie-siWWUW0/edit?gid=0#gid=0  
+    - Erros: https://docs.google.com/spreadsheets/d/1qEI-1PVtfYc_mIP4iCwAKffKTS1jT9b--ie-siWWUW0/edit?gid=1458043745#gid=1458043745
+
+
+
+
+
+
+
+
 
 
 ## Licença
