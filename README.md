@@ -372,3 +372,10 @@ PROMPT_VERSION=1
 ## Licença
 
 Livre para uso educacional ou análise de código.
+
+
+### 🧑‍💻 Autor
+
+Projeto desenvolvido para estudo e demonstração de estratégias de detecção de ameaças com Machine Learning e análise inteligente de logs, aplicando técnicas de Detecção de Anomalias e práticas de Segurança Cibernética (Blue Team).
+| [<img src="https://avatars.githubusercontent.com/u/55546267?v=4" width=115><br><sub>Priscila Miranda</sub>](https://github.com/priscilafraser) |
+| :---: |
