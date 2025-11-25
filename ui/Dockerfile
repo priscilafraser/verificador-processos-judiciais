@@ -15,4 +15,5 @@ COPY . .
 ENV PORT=8501
 
 # Comando Padrão Streamlit
-CMD ["sh", "c", "streamlit run app_interface.py --server.port=$PORT --server.address=0.0.0.0"]
+#CMD ["sh", "-c", "streamlit run app_interface.py --server.port=$PORT --server.address=0.0.0.0"]
+CMD ["streamlit", "run", "app_interface.py", "--server.port=8501", "--server.address=0.0.0.0"]
