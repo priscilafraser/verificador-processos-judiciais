@@ -73,7 +73,7 @@ def analisar_processo(processo: Processo):
             status_code=500,
             detail={
                 "error": "Falha ao obter decisão do LLM.",
-                "details": str(e),
+                #"details": str(e),
             },
         )
 
@@ -96,7 +96,6 @@ def analisar_processo(processo: Processo):
             status_code=500,
             detail={
                 "error": "Erro interno ao analisar o processo.",
-                "details": str(e),
             },
         )
     
