@@ -1,22 +1,22 @@
-# ui/Dockerfile
-
 FROM python:3.11-slim
 
-ENV PYTHONUNBUFFERED=1
-
+# Diretório de trabalho dentro do container
 WORKDIR /app
 
-# Copia apenas as dependências da UI
-COPY requirements-ui.txt .
+# Copia apenas o requirements da UI
+COPY ui/requirements.txt ./requirements.txt
 
-RUN pip install --no-cache-dir -r requirements-ui.txt
+# Instala dependências do frontend
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia TODO o código da UI
-COPY . .
+# Copia apenas o código da UI
+COPY ui/ ./ui
 
-# Porta padrão do Streamlit
+# Entra na pasta da UI
+WORKDIR /app/ui
+
+# Porta que o Railway vai injetar (ou usa 8501 localmente)
 ENV PORT=8501
-EXPOSE 8501
 
-# Aqui o arquivo está direto em /app/app_interface.py
-CMD ["streamlit", "run", "app_interface.py", "--server.port=8501", "--server.address=0.0.0.0"]
+# Comando para rodar o Streamlit
+CMD ["sh", "-c", "streamlit run app_interface.py --server.port=$PORT --server.address=0.0.0.0"]
