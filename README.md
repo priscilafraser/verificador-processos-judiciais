@@ -458,12 +458,8 @@ https://docs.google.com/spreadsheets/d/1qEI-1PVtfYc_mIP4iCwAKffKTS1jT9b--ie-siWW
     - Erros: https://docs.google.com/spreadsheets/d/1qEI-1PVtfYc_mIP4iCwAKffKTS1jT9b--ie-siWWUW0/edit?gid=1458043745#gid=1458043745
 
 
-
-
-
-
-
-
+## Fluxo da solução disponível no Trello
+**https://trello.com/invite/b/691e8fe18e16e8a8da4d7236/ATTI53f805c97fc59de40e607279ec96ae589385B776/verificador-de-processos-judiciais**
 
 
 ## Licença
